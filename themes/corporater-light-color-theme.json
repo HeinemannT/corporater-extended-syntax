@@ -94,19 +94,14 @@
       "settings": { "foreground": "#008080", "fontStyle": "italic" }
     },
     {
-      "name": "Custom Architect Variables (_prefix)",
-      "scope": ["variable.other.custom.underscore.extended"],
-      "settings": { "foreground": "#795E26" }
+      "name": "Custom Variables (Unified)",
+      "scope": ["variable.other.custom.extended"],
+      "settings": { "foreground": "#005CC5" }
     },
     {
       "name": "Configuration Keys (Architect)",
       "scope": ["variable.parameter.configuration.extended"],
       "settings": { "foreground": "#795E26" }
-    },
-    {
-      "name": "Custom Extended Variables (vPrefix)",
-      "scope": ["variable.other.custom.vprefix.extended"],
-      "settings": { "foreground": "#005CC5" }
     },
     {
       "name": "System Properties",

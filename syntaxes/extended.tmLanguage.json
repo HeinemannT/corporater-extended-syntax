@@ -4,31 +4,6 @@
   "scopeName": "source.extended",
   "patterns": [
     {
-      "comment": "Comments: Single line",
-      "match": "//.*$",
-      "name": "comment.line.double-slash.extended"
-    },
-    {
-      "comment": "Comments: Multi line",
-      "begin": "/\\*",
-      "end": "\\*/",
-      "name": "comment.block.extended"
-    },
-    {
-      "comment": "Strings: Double quotes (Defined early to protect content)",
-      "begin": "\"",
-      "end": "\"",
-      "name": "string.quoted.double.extended",
-      "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.extended" } ]
-    },
-    {
-      "comment": "Strings: Single quotes (Defined early to protect content)",
-      "begin": "'",
-      "end": "'",
-      "name": "string.quoted.single.extended",
-      "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.extended" } ]
-    },
-    {
       "comment": "Expression Call {myExpression} - Action Runner Brackets (Green). Must be TOP PRIORITY.",
       "match": "(\\{)([a-zA-Z0-9_]+)(\\})",
       "captures": {
@@ -51,6 +26,17 @@
       "comment": "DocBlock Tags",
       "match": "(?<=/\\*\\s*)(Name|Tags|Explanation|Note)(?=:)",
       "name": "keyword.other.documentation.extended"
+    },
+    {
+      "comment": "Comments: Single line",
+      "match": "//.*$",
+      "name": "comment.line.double-slash.extended"
+    },
+    {
+      "comment": "Comments: Multi line",
+      "begin": "/\\*",
+      "end": "\\*/",
+      "name": "comment.block.extended"
     },
     {
       "comment": "ILLEGAL: Inline IF assignments must be wrapped",
@@ -88,6 +74,20 @@
       "name": "keyword.operator.comparison.extended"
     },
     {
+      "comment": "Strings: Double quotes",
+      "begin": "\"",
+      "end": "\"",
+      "name": "string.quoted.double.extended",
+      "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.extended" } ]
+    },
+    {
+      "comment": "Strings: Single quotes",
+      "begin": "'",
+      "end": "'",
+      "name": "string.quoted.single.extended",
+      "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.extended" } ]
+    },
+    {
       "comment": "Context Keywords",
       "match": "\\b(this|self|after)\\.(object|organisation|user|start|end|bop|eop|inputView|inputViews)\\b|\\b(after|self)\\b",
       "name": "variable.language.context.extended"
@@ -118,14 +118,9 @@
       "name": "support.function.table.extended"
     },
     {
-      "comment": "Custom Variables (_prefix)",
-      "match": "\\b_[a-zA-Z0-9_]+\\b",
-      "name": "variable.other.custom.underscore.extended"
-    },
-    {
-      "comment": "Custom Variables (vPrefix)",
-      "match": "\\bv[A-Z][a-zA-Z0-9_]*\\b",
-      "name": "variable.other.custom.vprefix.extended"
+      "comment": "Custom Variables (Unified Scope)",
+      "match": "\\b(_[a-zA-Z0-9_]+|v[A-Z][a-zA-Z0-9_]*)\\b",
+      "name": "variable.other.custom.extended"
     },
     {
       "comment": "Style Constants",

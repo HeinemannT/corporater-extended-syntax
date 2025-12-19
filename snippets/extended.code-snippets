@@ -1,9 +1,11 @@
 {
-  "IF Block": {
-    "prefix": "IF-block",
+  "Transaction Block": {
+    "prefix": "IF-transaction",
     "body": [
       "IF ${1:condition} THEN",
-      "    ${2:action}",
+      "    ${2:this.object}.change(",
+      "        ${3:property} := ${4:value}",
+      "    )",
       "ELSE",
       "    \"\"",
       "ENDIF"
@@ -17,6 +19,17 @@
     ],
     "description": "Standard SELECT query format."
   },
+  "Safe Property Check": {
+    "prefix": "check-prop",
+    "body": [
+      "IF ${1:object}.${2:property} != MISSING THEN",
+      "    ${1:object}.${2:property}",
+      "ELSE",
+      "    ${3:\"Default Value\"}",
+      "ENDIF"
+    ],
+    "description": "Safely checks if a property exists before using it."
+  },
   "Simple Loop": {
     "prefix": "loop-simple",
     "body": [
@@ -29,30 +42,30 @@
   "JSON String Builder": {
     "prefix": "json-string",
     "body": [
-      "vJson := '{'",
-      "       + '\"key\": \"value\",'",
-      "       + '\"number\": 123'",
-      "       + '}'",
+      "vJson := '{",
+      " \"key\": \"value\",",
+      " \"number\": 123",
+      "}'",
       "$0"
     ],
-    "description": "Creates a multi-line JSON string using concatenation (safe for highlighting)."
+    "description": "Creates a multi-line JSON string without concatenation."
   },
-    "JSON List Builder": {
+  "JSON List Builder": {
     "prefix": "json-list",
     "body": [
-      "vJsonList := '['",
-      "           + '  {'",
-      "           + '    \"id\": \"${1:obj1_id}\",'",
-      "           + '    \"name\": \"${2:Object 1}\"'",
-      "           + '  },'",
-      "           + '  {'",
-      "           + '    \"id\": \"${3:obj2_id}\",'",
-      "           + '    \"name\": \"${4:Object 2}\"'",
-      "           + '  }'",
-      "           + ']'",
+      "vJsonList := '[",
+      "  {",
+      "    \"id\": \"${1:obj1_id}\",",
+      "    \"name\": \"${2:Object 1}\"",
+      "  },",
+      "  {",
+      "    \"id\": \"${3:obj2_id}\",",
+      "    \"name\": \"${4:Object 2}\"",
+      "  }",
+      "]'",
       "$0"
     ],
-    "description": "Creates a multi-line JSON list with two objects using concatenation."
+    "description": "Creates a multi-line JSON list with two objects without concatenation."
   },
   "Table with Columns": {
     "prefix": "table-columns",
@@ -129,5 +142,23 @@
       ")"
     ],
     "description": "Sends an email to a recipient."
+  },
+  "Notify User": {
+    "prefix": "notify-user",
+    "body": [
+      "notify(\"${1:Subject}\", ",
+      "    \"${2:Body}\", ",
+      "    ${3:this.user}, ",
+      "    \"${4:Category}\"",
+      ")"
+    ],
+    "description": "Sends a system notification."
+  },
+  "Debug Output": {
+    "prefix": "debug-output",
+    "body": [
+      "output('Debug: ' + str(${1:variable}))"
+    ],
+    "description": "Wraps a variable in output() for inspection."
   }
 }
