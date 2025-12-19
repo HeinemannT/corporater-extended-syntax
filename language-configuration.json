@@ -22,10 +22,18 @@
     [ "\"", "\"" ],
     [ "'", "'" ]
   ],
-  "folding": {
-    "markers": {
-      "start": "^\\s*//\\s*#region",
-      "end": "^\\s*//\\s*#endregion"
+  "indentationRules": {
+    "increaseIndentPattern": "^\\s*(IF|ELSE|.*\\b(forEach|map|filter)\\s*\\().*$",
+    "decreaseIndentPattern": "^\\s*(ELSE|ENDIF|\\)|\\}).*$"
+  },
+  "onEnterRules": [
+    {
+      "beforeText": "^\\s*.*\\($",
+      "afterText": "^\\s*\\)$",
+      "action": {
+        "indentAction": "indentOutdent"
+      }
     }
-  }
+  ],
+  "wordPattern": "(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\@\\#\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s]+)"
 }

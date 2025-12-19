@@ -384,6 +384,252 @@ Returns the end date of the current context period.
     'root.transformer': 'Model Root: Transformers',
     'root.user': 'Model Root: Users'
 };
+// Helper to create simple params
+function p(label, documentation) {
+    return new vscode.ParameterInformation(label, documentation);
+}
+const signatures = {
+    // Transactional
+    'add': [{
+            label: 'add(objectType, [prop := val, ...])',
+            documentation: new vscode.MarkdownString(`**Adds a new object instance.**\n\n* **⚠️ Limitation:** Cannot use templates (e.g. from Defaults) directly. Add the base type and use \`.link()\`.\n* **Example:** \`o.137.add(Scorecard)\``),
+            parameters: [
+                p('objectType', 'The Class of object to create (e.g. Scorecard, Kpi).'),
+                p('prop := val...', 'Optional property assignments (e.g. name := "Revenue").')
+            ]
+        }],
+    'change': [{
+            label: 'change(prop := val, ...)',
+            documentation: new vscode.MarkdownString(`**Modifies properties.**\n\n* **⚠️ Performance:** Triggers updates on every object. Use sparingly on large lists.\n* **⚠️ Pitfall:** Changing \`id\` breaks external references.`),
+            parameters: [p('prop := val...', 'Property assignments (e.g. name := "New Name").')]
+        }],
+    'notify': [{
+            label: 'notify(subject, [body], [recipients], [category])',
+            documentation: new vscode.MarkdownString(`**Sends a system notification.**`),
+            parameters: [
+                p('subject', 'Notification title.'),
+                p('body', 'Optional body text.'),
+                p('recipients', 'Optional list of Users/Groups. Defaults to System Admin.'),
+                p('category', 'Optional category string.')
+            ]
+        }],
+    'sendmail': [{
+            label: 'sendmail(subject, body, recipients)',
+            documentation: new vscode.MarkdownString(`**Sends an email.**\n\n* **Note:** Body supports HTML. Use \`md()\` to convert markdown.`),
+            parameters: [
+                p('subject', 'Email subject line.'),
+                p('body', 'Email body (HTML supported).'),
+                p('recipients', 'List of Users/Groups or email strings.')
+            ]
+        }],
+    'copy': [{
+            label: 'copy(object, [prop := val, ...])',
+            documentation: new vscode.MarkdownString(`**Duplicates an object.**`),
+            parameters: [
+                p('object', 'The source object to copy.'),
+                p('prop := val...', 'Optional property overrides for the new copy.')
+            ]
+        }],
+    'link': [{
+            label: 'link(templateObject)',
+            documentation: new vscode.MarkdownString(`**Creates a linked copy of a template.**\n\n* **Best Practice:** Use for structural objects (Scorecards) to inherit future updates.`),
+            parameters: [p('templateObject', 'The template object (usually from t. or d. namespace).')]
+        }],
+    'affixLink': [{
+            label: 'affixLink(templateObject)',
+            documentation: new vscode.MarkdownString(`**Links an existing object to a template.**`),
+            parameters: [p('templateObject', 'The template to link to.')]
+        }],
+    'move': [{
+            label: 'move(destinationObject)',
+            documentation: new vscode.MarkdownString(`**Re-parents an object.**\n\n* **⚠️ Limitation:** Cannot move objects between different Models/Roots.`),
+            parameters: [p('destinationObject', 'The new parent object.')]
+        }],
+    'moveAfter': [{
+            label: 'moveAfter(destinationObject)',
+            documentation: 'Reorders this object to sit immediately *after* the target.',
+            parameters: [p('destinationObject', 'The object to follow.')]
+        }],
+    'moveBefore': [{
+            label: 'moveBefore(destinationObject)',
+            documentation: 'Reorders this object to sit immediately *before* the target.',
+            parameters: [p('destinationObject', 'The object to precede.')]
+        }],
+    'reset': [{
+            label: 'reset([prop1], ...)',
+            documentation: 'Reverts overridden properties to their template values.',
+            parameters: [p('prop1...', 'List of properties to reset.')]
+        }],
+    'clear': [{
+            label: 'clear([prop1], ...)',
+            documentation: 'Clears properties (object) or InputView variables (session).',
+            parameters: [p('prop1...', 'Properties or variables to clear.')]
+        }],
+    // List & Object
+    'filter': [{
+            label: 'filter(condition)',
+            documentation: new vscode.MarkdownString(`**Returns items matching the condition.**\n\n* **Performance:** Iterates in memory. Consider \`SELECT\` for large sets.`),
+            parameters: [p('condition', 'Boolean expression (e.g. name = "Revenue").')]
+        }],
+    'map': [{
+            label: 'map(keyExp, [valueExp])',
+            documentation: 'Converts a list into a Map structure.',
+            parameters: [
+                p('keyExp', 'Expression for the map key.'),
+                p('valueExp', 'Optional expression for the map value.')
+            ]
+        }],
+    'forEach': [{
+            label: 'forEach(iterator: ...)',
+            documentation: new vscode.MarkdownString(`**Iterates through a list.**\n\n* **⚠️ Scope:** Variables defined inside persist outside.`),
+            parameters: [p('iterator', 'Loop body (e.g. item: ...)')]
+        }],
+    'sort': [{
+            label: 'sort([expression])',
+            documentation: 'Sorts the list (ascending).',
+            parameters: [p('expression', 'Optional sort key. Defaults to item value.')]
+        }],
+    'sortReverse': [{
+            label: 'sortReverse([expression])',
+            documentation: 'Sorts the list (descending).',
+            parameters: [p('expression', 'Optional sort key.')]
+        }],
+    'children': [{
+            label: 'children([type], ...)',
+            documentation: 'Returns immediate first-level child objects.',
+            parameters: [p('type...', 'Optional types to filter by (e.g. Kpi).')]
+        }],
+    'descendants': [{
+            label: 'descendants([type], ...)',
+            documentation: new vscode.MarkdownString(`**Returns recursive child objects.**\n\n* **⚠️ Performance:** Heavy operation. Always filter by type.`),
+            parameters: [p('type...', 'Optional types to filter by.')]
+        }],
+    'ancestor': [{
+            label: 'ancestor(type)',
+            documentation: 'Returns the first parent/grandparent matching the type.',
+            parameters: [p('type', 'The Class to search for (e.g. Scorecard).')]
+        }],
+    'rref': [{
+            label: 'rref([property], [type], [start], [end])',
+            documentation: 'Reverse Reference: Finds objects that link *to* this object.',
+            parameters: [
+                p('property', 'The reference property on the *other* object.'),
+                p('type', 'Optional type of the *other* object.'),
+                p('start', 'Optional start date filter.'),
+                p('end', 'Optional end date filter.')
+            ]
+        }],
+    'substring': [{
+            label: 'substring(start, [end])',
+            documentation: 'Extracts a portion of a string.',
+            parameters: [p('start', 'Start index (0-based).'), p('end', 'Optional end index.')]
+        }],
+    'indexOf': [{
+            label: 'indexOf(substring, [start])',
+            documentation: 'Returns the index of a substring, or MISSING if not found.',
+            parameters: [p('substring', 'Text to search for.'), p('start', 'Optional start index.')]
+        }],
+    'url': [
+        {
+            label: 'url(text)',
+            documentation: 'Simple link with text label.',
+            parameters: [p('text', 'Label text.')]
+        },
+        {
+            label: 'url(icon, text)',
+            documentation: 'Link with icon and text.',
+            parameters: [p('icon', 'Icon resource (e.g. r.icon_name).'), p('text', 'Label text.')]
+        },
+        {
+            label: 'url(icon, text, tooltip)',
+            documentation: 'Link with icon, text, and tooltip.',
+            parameters: [p('icon', 'Icon.'), p('text', 'Label.'), p('tooltip', 'Hover text.')]
+        },
+        {
+            label: 'url(icon, text, tooltip, url)',
+            documentation: 'Full link control with external URL.',
+            parameters: [p('icon', 'Icon.'), p('text', 'Label.'), p('tooltip', 'Hover text.'), p('url', 'External destination.')]
+        }
+    ],
+    'whenMissing': [{
+            label: 'whenMissing(default)',
+            documentation: 'Returns the default value if the expression is MISSING.',
+            parameters: [p('default', 'Fallback value.')]
+        }],
+    'tree': [{
+            label: 'tree([childExp], [collapseExp])',
+            documentation: 'Builds a hierarchical tree structure for Tree Tables.',
+            parameters: [
+                p('childExp', 'Expression to find children (default: children).'),
+                p('collapseExp', 'Expression to determine if row is collapsed.')
+            ]
+        }],
+    // Table
+    'addColumn': [{
+            label: 'addColumn(header, expression)',
+            documentation: 'Adds a column to the table.',
+            parameters: [p('header', 'Column title.'), p('expression', 'Value expression for the column.')]
+        }],
+    'addTimeColumns': [{
+            label: 'addTimeColumns(val, type, start, end, name)',
+            documentation: 'Generates dynamic columns for a time range.',
+            parameters: [
+                p('val', 'Value expression.'),
+                p('type', 'Period type (e.g. p.month).'),
+                p('start', 'Start date.'),
+                p('end', 'End date.'),
+                p('name', 'Column name prefix.')
+            ]
+        }],
+    'addRow': [{
+            label: 'addRow(obj, [vals...])',
+            documentation: new vscode.MarkdownString(`**Adds a manual row.**\n\n* **⚠️ Limitation:** Cannot reuse the same context object in multiple rows.`),
+            parameters: [
+                p('obj', 'Context object for the row.'),
+                p('vals...', 'Values for each column.')
+            ]
+        }],
+    'style': [{
+            label: 'style(style1, ...)',
+            documentation: 'Applies styles to table elements.',
+            parameters: [p('style1...', 'Styles (bold, italics, wrapped, full, truncated, separator).')]
+        }],
+    'decimals': [{
+            label: 'decimals(n)',
+            documentation: 'Sets decimal precision.',
+            parameters: [p('n', 'Number of decimal places.')]
+        }],
+    // Global
+    'date': [{
+            label: 'date(string)',
+            documentation: 'Parses date string.',
+            parameters: [p('string', 'Date string (e.g. "2023-01-01").')]
+        }],
+    'str': [{
+            label: 'str(value)',
+            documentation: 'Casts a value to a string.',
+            parameters: [p('value', 'Input value.')]
+        }],
+    'num': [{
+            label: 'num(value)',
+            documentation: 'Casts a value to a number.',
+            parameters: [p('value', 'Input value.')]
+        }],
+    'md': [{
+            label: 'md(string)',
+            documentation: new vscode.MarkdownString(`**Renders Markdown to HTML.**\n\n* **Feature:** Supports \`\${var}\` interpolation.`),
+            parameters: [p('string', 'Markdown text.')]
+        }],
+    'priority': [{
+            label: 'priority(prob, cons, [setting])',
+            documentation: 'Calculates risk priority color.',
+            parameters: [
+                p('prob', 'Probability value.'),
+                p('cons', 'Consequence/Impact value.'),
+                p('setting', 'Optional Risk Matrix setting.')
+            ]
+        }]
+};
 // --- ERROR EXPLAINERS ---
 // Explanations for common "Illegal" patterns detected by the grammar.
 const errorExplainers = {
@@ -398,7 +644,60 @@ const errorExplainers = {
 * **Fix:** Wrap the entire IF block in parentheses.
 * **Correct:** \`v := (IF condition THEN val1 ELSE val2 ENDIF)\``
 };
+// --- AUTOCOMPLETE ITEMS ---
+const globalKeywords = [
+    new vscode.CompletionItem('IF', vscode.CompletionItemKind.Keyword),
+    new vscode.CompletionItem('ELSE', vscode.CompletionItemKind.Keyword),
+    new vscode.CompletionItem('ENDIF', vscode.CompletionItemKind.Keyword),
+    new vscode.CompletionItem('SELECT', vscode.CompletionItemKind.Keyword),
+    new vscode.CompletionItem('FROM', vscode.CompletionItemKind.Keyword),
+    new vscode.CompletionItem('WHERE', vscode.CompletionItemKind.Keyword),
+    new vscode.CompletionItem('return', vscode.CompletionItemKind.Keyword),
+    new vscode.CompletionItem('root', vscode.CompletionItemKind.Module),
+    new vscode.CompletionItem('this', vscode.CompletionItemKind.Module),
+    new vscode.CompletionItem('MISSING', vscode.CompletionItemKind.Constant),
+    new vscode.CompletionItem('TODAY', vscode.CompletionItemKind.Constant),
+    new vscode.CompletionItem('TRUE', vscode.CompletionItemKind.Constant),
+    new vscode.CompletionItem('FALSE', vscode.CompletionItemKind.Constant)
+];
+const rootCompletions = [
+    'organisation', 'risk', 'user', 'accessProfile', 'accessPolicy', 'actionPlan',
+    'ceAsset', 'ceAttachment', 'ceIndicator', 'ceRiskAssessment', 'classConfig',
+    'custom_Period', 'defaults', 'expression', 'externalResource', 'forms', 'group',
+    'node', 'nodeDataImport', 'nodeType', 'notification', 'page', 'portal',
+    'processManagement', 'property', 'reporter', 'role', 'templateCategory',
+    'transformer'
+].map(r => new vscode.CompletionItem(r, vscode.CompletionItemKind.Class));
+const thisCompletions = [
+    'object', 'user', 'location', 'inputview'
+].map(t => new vscode.CompletionItem(t, vscode.CompletionItemKind.Property));
+// Prioritized methods for smart completion
+const prioritizedMethods = ['filter', 'map', 'change', 'add', 'first', 'forEach', 'calculate'];
+const methodCompletions = Object.keys(signatures).map(key => {
+    const item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Method);
+    item.insertText = new vscode.SnippetString(`${key}($0)`);
+    // Sort critical methods to the top
+    if (prioritizedMethods.includes(key)) {
+        item.sortText = '0' + key;
+    }
+    else {
+        item.sortText = '1' + key;
+    }
+    const sig = signatures[key][0];
+    if (sig) {
+        // Convert MarkdownString to string for detail if needed, but documentation takes Markdown
+        item.documentation = sig.documentation;
+        item.detail = sig.label;
+    }
+    return item;
+});
+const systemProperties = [
+    'id', 'name', 'description', 'className', 'parent', 'linkedTo',
+    'createdTime', 'createdBy', 'lastModifiedDate', 'lastModifiedBy',
+    'visible', 'inheritVisible', 'inScope', 'inheritScope', 'available', 'inheritAvailable'
+].map(p => new vscode.CompletionItem(p, vscode.CompletionItemKind.Field));
 function activate(context) {
+    // 1. HOVER PROVIDER
     const hoverProvider = vscode.languages.registerHoverProvider('extended', {
         provideHover(document, position, token) {
             const range = document.getWordRangeAtPosition(position);
@@ -406,7 +705,7 @@ function activate(context) {
                 return undefined;
             const word = document.getText(range);
             const lineText = document.lineAt(position).text;
-            // 1. Check for Error/Illegal Patterns first (High Priority)
+            // Check for Error/Illegal Patterns first (High Priority)
             if (word === 'NOT') {
                 const preText = lineText.substring(0, range.start.character).trimEnd();
                 if (preText.endsWith('IF') || preText.endsWith('AND') || preText.endsWith('OR')) {
@@ -419,17 +718,16 @@ function activate(context) {
                     return new vscode.Hover(new vscode.MarkdownString(errorExplainers['IF']));
                 }
             }
-            // 2. Check for Standard Documentation
+            // Check for Standard Documentation
             const lowerWord = word.toLowerCase();
             if (architectNotes[lowerWord] || architectNotes[word]) {
                 const note = architectNotes[lowerWord] || architectNotes[word];
                 return new vscode.Hover(new vscode.MarkdownString(note));
             }
-            // 3. Handle namespaced calls (e.g. root.organisation)
+            // Handle namespaced calls (e.g. root.organisation)
             const dotRange = document.getWordRangeAtPosition(position, /[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+/);
             if (dotRange) {
                 const fullToken = document.getText(dotRange);
-                // Try exact match first, then lower
                 if (architectNotes[fullToken]) {
                     return new vscode.Hover(new vscode.MarkdownString(architectNotes[fullToken]));
                 }
@@ -440,7 +738,111 @@ function activate(context) {
             return undefined;
         }
     });
-    context.subscriptions.push(hoverProvider);
+    // 2. DIAGNOSTIC COLLECTION
+    const diagnosticCollection = vscode.languages.createDiagnosticCollection('extended');
+    const validate = (doc) => {
+        if (doc.languageId !== 'extended')
+            return;
+        const diagnostics = [];
+        const text = doc.getText();
+        // Check for 'IF NOT'
+        const ifNotRegex = /\bIF\s+NOT\b/g;
+        let match;
+        while ((match = ifNotRegex.exec(text)) !== null) {
+            const startPos = doc.positionAt(match.index);
+            const endPos = doc.positionAt(match.index + match[0].length);
+            diagnostics.push(new vscode.Diagnostic(new vscode.Range(startPos, endPos), 'Illegal Syntax: "IF NOT" is not supported. Compare to FALSE instead.', vscode.DiagnosticSeverity.Error));
+        }
+        // Check for Unwrapped Assignment 'v := IF'
+        const unwrappedIfRegex = /:=\s*IF\b/g;
+        while ((match = unwrappedIfRegex.exec(text)) !== null) {
+            const startPos = doc.positionAt(match.index);
+            const endPos = doc.positionAt(match.index + match[0].length);
+            diagnostics.push(new vscode.Diagnostic(new vscode.Range(startPos, endPos), 'Potential Error: Conditional assignment must be wrapped in parentheses: v := (IF ...)', vscode.DiagnosticSeverity.Warning));
+        }
+        diagnosticCollection.set(doc.uri, diagnostics);
+    };
+    vscode.workspace.onDidOpenTextDocument(validate);
+    vscode.workspace.onDidSaveTextDocument(validate);
+    vscode.workspace.onDidChangeTextDocument(e => validate(e.document));
+    // 3. SIGNATURE HELP PROVIDER
+    const signatureProvider = vscode.languages.registerSignatureHelpProvider('extended', {
+        provideSignatureHelp(document, position, token) {
+            const range = document.getWordRangeAtPosition(position);
+            const lineText = document.lineAt(position).text;
+            const textBefore = lineText.substring(0, position.character);
+            // Find the last '('
+            let parenDepth = 0;
+            let openParenIndex = -1;
+            for (let i = textBefore.length - 1; i >= 0; i--) {
+                if (textBefore[i] === ')')
+                    parenDepth++;
+                else if (textBefore[i] === '(') {
+                    if (parenDepth > 0)
+                        parenDepth--;
+                    else {
+                        openParenIndex = i;
+                        break;
+                    }
+                }
+            }
+            if (openParenIndex === -1)
+                return undefined;
+            const methodCallText = textBefore.substring(0, openParenIndex).trimEnd();
+            const methodMatch = methodCallText.match(/([a-zA-Z0-9_]+)$/);
+            if (!methodMatch)
+                return undefined;
+            const methodName = methodMatch[1];
+            const argsText = textBefore.substring(openParenIndex + 1);
+            const paramCount = (argsText.match(/,/g) || []).length;
+            const sigDataArray = signatures[methodName];
+            if (sigDataArray && sigDataArray.length > 0) {
+                const help = new vscode.SignatureHelp();
+                help.signatures = sigDataArray.map(s => {
+                    const info = new vscode.SignatureInformation(s.label, s.documentation);
+                    info.parameters = s.parameters.map(p => {
+                        return typeof p === 'string' ? new vscode.ParameterInformation(p) : p;
+                    });
+                    return info;
+                });
+                help.activeSignature = 0;
+                help.activeParameter = paramCount;
+                return help;
+            }
+            return undefined;
+        }
+    }, '(', ',');
+    // 4. COMPLETION PROVIDER
+    const completionProvider = vscode.languages.registerCompletionItemProvider('extended', {
+        provideCompletionItems(document, position) {
+            const linePrefix = document.lineAt(position).text.substr(0, position.character);
+            // Bucket 3: root.
+            if (linePrefix.endsWith('root.')) {
+                return rootCompletions;
+            }
+            // Bucket 4: this.
+            if (linePrefix.endsWith('this.')) {
+                return thisCompletions;
+            }
+            // Bucket 5: NO suggestions for custom namespaces (t., o., etc.)
+            // We strictly avoid suggesting things for these prefixes as they vary per client.
+            if (linePrefix.match(/\b(t|o|ce[a-z]+|ds|ap|k|n|nt|u|g|p|r|d|c)\.$/)) {
+                return undefined;
+            }
+            // Bucket 2: Dot Access (General methods and properties)
+            if (linePrefix.endsWith('.')) {
+                return [...methodCompletions, ...systemProperties];
+            }
+            // Bucket 1: Global Scope (default)
+            const quoteCount = (linePrefix.match(/'/g) || []).length + (linePrefix.match(/"/g) || []).length;
+            if (quoteCount % 2 === 0) {
+                return globalKeywords;
+            }
+            return undefined;
+        }
+    }, '.' // Trigger on dot
+    );
+    context.subscriptions.push(hoverProvider, diagnosticCollection, signatureProvider, completionProvider);
 }
 exports.activate = activate;
 function deactivate() { }
