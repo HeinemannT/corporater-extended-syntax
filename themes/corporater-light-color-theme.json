@@ -9,39 +9,84 @@
   },
   "tokenColors": [
     {
+      "name": "Control Keywords (IF ELSE)",
+      "scope": ["keyword.control"],
+      "settings": { "foreground": "#0000ff", "fontStyle": "bold" }
+    },
+    {
+      "name": "Context Keywords (this, self, after)",
+      "scope": ["variable.language.context.extended"],
+      "settings": { "foreground": "#0000ff", "fontStyle": "italic" }
+    },
+    {
+      "name": "Brackets & Punctuation (Default Red)",
+      "scope": ["punctuation.section.brackets.extended"],
+      "settings": { "foreground": "#ff0039", "fontStyle": "bold" }
+    },
+    {
+      "name": "Action Runner Brackets ({}) - Green",
+      "scope": ["punctuation.section.brackets.runner.extended"],
+      "settings": { "foreground": "#008000", "fontStyle": "bold" }
+    },
+    {
+      "name": "Object Types (Kpi, Incident...)",
+      "scope": ["entity.name.class.extended"],
+      "settings": { "foreground": "#008080", "fontStyle": "bold" }
+    },
+    {
+      "name": "ID Namespaces (t., o., ceven.)",
+      "scope": ["entity.name.type.namespace.extended"],
+      "settings": { "foreground": "#0451A5" }
+    },
+    {
+      "name": "Double Quotes",
+      "scope": ["string.quoted.double"],
+      "settings": { "foreground": "#db00bd" }
+    },
+    {
+      "name": "Single Quotes",
+      "scope": ["string.quoted.single"],
+      "settings": { "foreground": "#ad8000" }
+    },
+    {
+      "name": "Variable Interpolation ${...}",
+      "scope": ["variable.other.interpolation.extended"],
+      "settings": { "foreground": "#0000ff", "fontStyle": "bold" }
+    },
+    {
+      "name": "Numbers",
+      "scope": ["constant.numeric"],
+      "settings": { "foreground": "#b439c7" }
+    },
+    {
+      "name": "Action Runners (Green = GO)",
+      "scope": ["entity.name.function.runner.extended"],
+      "settings": { "foreground": "#008000", "fontStyle": "bold" }
+    },
+    {
+      "name": "Commands/Methods (Functional)",
+      "scope": [
+        "support.function.method.extended", 
+        "support.function.global.extended", 
+        "support.function.table.extended",
+        "entity.name.function.call.extended"
+      ],
+      "settings": { "foreground": "#ad8000", "fontStyle": "italic" }
+    },
+    {
+      "name": "Transactional Methods (DANGER)",
+      "scope": ["storage.type.method.transactional.extended"],
+      "settings": { "foreground": "#ff0039", "fontStyle": "bold" }
+    },
+    {
       "name": "Comment",
       "scope": ["comment"],
       "settings": { "foreground": "#008000" }
     },
     {
-      "name": "Strings",
-      "scope": ["string"],
-      "settings": { "foreground": "#A31515" }
-    },
-    {
-      "name": "Numbers",
-      "scope": ["constant.numeric"],
-      "settings": { "foreground": "#098658" }
-    },
-    {
-      "name": "Control Keywords",
-      "scope": ["keyword.control"],
-      "settings": { "foreground": "#AF00DB", "fontStyle": "bold" }
-    },
-    {
-      "name": "Transactional Methods (WRITE/DANGER)",
-      "scope": ["storage.type.method.transactional.extended"],
-      "settings": { "foreground": "#D00000", "fontStyle": "bold" }
-    },
-    {
-      "name": "Standard Methods (READ/SAFE)",
-      "scope": ["support.function.method.extended", "support.function.global.extended"],
-      "settings": { "foreground": "#005CC5" }
-    },
-    {
-      "name": "Table Methods (Configuration)",
-      "scope": ["support.function.table.extended"],
-      "settings": { "foreground": "#008080" }
+      "name": "Documentation Tags",
+      "scope": ["keyword.other.documentation.extended"],
+      "settings": { "foreground": "#008000", "fontStyle": "bold" }
     },
     {
       "name": "Model Roots",
@@ -49,13 +94,13 @@
       "settings": { "foreground": "#008080", "fontStyle": "italic" }
     },
     {
-      "name": "System Properties",
-      "scope": ["variable.other.property.system.extended"],
-      "settings": { "foreground": "#005CC5" }
-    },
-    {
       "name": "Custom Architect Variables (_prefix)",
       "scope": ["variable.other.custom.underscore.extended"],
+      "settings": { "foreground": "#795E26" }
+    },
+    {
+      "name": "Configuration Keys (Architect)",
+      "scope": ["variable.parameter.configuration.extended"],
       "settings": { "foreground": "#795E26" }
     },
     {
@@ -64,9 +109,9 @@
       "settings": { "foreground": "#005CC5" }
     },
     {
-      "name": "Input Keys (key_prefix)",
-      "scope": ["variable.other.custom.inputkey.extended"],
-      "settings": { "foreground": "#0451A5" }
+      "name": "System Properties",
+      "scope": ["variable.other.property.system.extended"],
+      "settings": { "foreground": "#005CC5", "fontStyle": "bold" }
     },
     {
       "name": "Illegal / Error",
@@ -74,23 +119,9 @@
       "settings": { "foreground": "#E51400", "fontStyle": "underline" }
     },
     {
-      "name": "Deprecated",
-      "scope": ["invalid.deprecated"],
-      "settings": { "foreground": "#754C00", "fontStyle": "italic" }
-    },
-    {
-      "name": "Constants & Enums",
+      "name": "Constants (MISSING, TRUE)",
       "scope": ["constant.language", "constant.other.style"],
-      "settings": { "foreground": "#800000" }
-    },
-    {
-      "name": "Embedded Language Background (JSON/HTML/CSS)",
-      "scope": [
-        "string.quoted.extended.embedded.html", 
-        "string.quoted.extended.embedded.css",
-        "string.quoted.extended.embedded.json"
-      ],
-      "settings": { "foreground": "#444444" }
+      "settings": { "foreground": "#800080", "fontStyle": "bold" }
     }
   ]
 }

@@ -4,93 +4,6 @@
   "scopeName": "source.extended",
   "patterns": [
     {
-      "comment": "EMBEDDED HTML: Triggered by strings starting with '<' or assigned to variables ending in 'Html'/'Body'",
-      "begin": "(?x) (?: (?<=\\b[a-zA-Z0-9_]*[Hh]tml\\s{0,10}:=\\s{0,10}) | (?<=\\b[a-zA-Z0-9_]*[Bb]ody\\s{0,10}:=\\s{0,10}) ) (\"|') | (\"|')(?=\\s*<[a-zA-Z])",
-      "end": "\\1|\\2",
-      "name": "string.quoted.extended.embedded.html",
-      "patterns": [
-        {
-          "match": "\\\\.",
-          "name": "constant.character.escape.extended"
-        },
-        {
-          "match": "\\$\\{[a-zA-Z0-9_\\.]+\\}",
-          "name": "variable.other.interpolation.extended"
-        },
-        {
-          "include": "text.html.basic"
-        }
-      ]
-    },
-    {
-      "comment": "EMBEDDED CSS: Triggered by variables ending in 'Style'",
-      "begin": "(?x) (?<=\\b[a-zA-Z0-9_]*[S]tyle\\s{0,10}:=\\s{0,10}) (\"|')",
-      "end": "\\1",
-      "name": "string.quoted.extended.embedded.css",
-      "patterns": [
-        {
-          "match": "\\\\.",
-          "name": "constant.character.escape.extended"
-        },
-        {
-          "match": "\\$\\{[a-zA-Z0-9_\\.]+\\}",
-          "name": "variable.other.interpolation.extended"
-        },
-        {
-          "include": "source.css"
-        }
-      ]
-    },
-    {
-      "comment": "EMBEDDED JSON: Triggered by strings starting with '{' or variables ending in 'Json'",
-      "begin": "(?x) (?: (?<=\\b[a-zA-Z0-9_]*[Jj]son\\s{0,10}:=\\s{0,10}) (\"|') | (\"|')(?=\\s*\\{) )",
-      "end": "\\1|\\2",
-      "name": "string.quoted.extended.embedded.json",
-      "patterns": [
-        {
-          "match": "\\\\.",
-          "name": "constant.character.escape.extended"
-        },
-        {
-          "match": "\\$\\{[a-zA-Z0-9_\\.]+\\}",
-          "name": "variable.other.interpolation.extended"
-        },
-        {
-          "include": "source.json"
-        }
-      ]
-    },
-    {
-      "comment": "ILLEGAL: Inline IF assignments must be wrapped in brackets (e.g., v := (IF...))",
-      "match": "(?<=:=)\\s*\\bIF\\b",
-      "name": "invalid.illegal.missing-brackets.extended"
-    },
-    {
-      "comment": "ILLEGAL: Universal NOT operator is not supported (only works with IN/CONTAINS)",
-      "match": "\\bNOT\\b\\s*(?!IN|CONTAINS)",
-      "name": "invalid.illegal.extended"
-    },
-    {
-      "comment": "Output Wrapper (Debug)",
-      "match": "\\boutput(?=\\()",
-      "name": "entity.name.function.debugger.extended"
-    },
-    {
-      "comment": "Expression Call {myExpression} - Strict regex rejects quotes/JSON",
-      "match": "\\{[a-zA-Z0-9_]+\\}",
-      "name": "entity.name.function.call.extended"
-    },
-    {
-      "comment": "Variable Interpolation ${...}",
-      "match": "\\$\\{[a-zA-Z0-9_\\.]+\\}",
-      "name": "variable.other.interpolation.extended"
-    },
-    {
-      "comment": "DocBlock Tags",
-      "match": "(?<=/\\*\\s*)(Name|Tags|Explanation|Note)(?=:)",
-      "name": "keyword.other.documentation.extended"
-    },
-    {
       "comment": "Comments: Single line",
       "match": "//.*$",
       "name": "comment.line.double-slash.extended"
@@ -102,28 +15,62 @@
       "name": "comment.block.extended"
     },
     {
-      "comment": "Strings: Double quotes",
+      "comment": "Strings: Double quotes (Defined early to protect content)",
       "begin": "\"",
       "end": "\"",
       "name": "string.quoted.double.extended",
-      "patterns": [
-        {
-          "match": "\\\\.",
-          "name": "constant.character.escape.extended"
-        }
-      ]
+      "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.extended" } ]
     },
     {
-      "comment": "Strings: Single quotes",
+      "comment": "Strings: Single quotes (Defined early to protect content)",
       "begin": "'",
       "end": "'",
       "name": "string.quoted.single.extended",
-      "patterns": [
-        {
-          "match": "\\\\.",
-          "name": "constant.character.escape.extended"
-        }
-      ]
+      "patterns": [ { "match": "\\\\.", "name": "constant.character.escape.extended" } ]
+    },
+    {
+      "comment": "Expression Call {myExpression} - Action Runner Brackets (Green). Must be TOP PRIORITY.",
+      "match": "(\\{)([a-zA-Z0-9_]+)(\\})",
+      "captures": {
+        "1": { "name": "punctuation.section.brackets.runner.extended" },
+        "2": { "name": "entity.name.function.runner.extended" },
+        "3": { "name": "punctuation.section.brackets.runner.extended" }
+      }
+    },
+    {
+      "comment": "Action Runners (start, expression)",
+      "match": "\\.(start)(?=\\()|\\.(expression)(?=\\b)",
+      "name": "entity.name.function.runner.extended"
+    },
+    {
+      "comment": "Transactional Methods (Write/Danger)",
+      "match": "\\.(add|affixLink|change|clear|copy|delete|error|generate|link|move|moveAfter|moveBefore|notify|reset|sendmail|unlink|update)(?=\\()",
+      "name": "storage.type.method.transactional.extended"
+    },
+    {
+      "comment": "DocBlock Tags",
+      "match": "(?<=/\\*\\s*)(Name|Tags|Explanation|Note)(?=:)",
+      "name": "keyword.other.documentation.extended"
+    },
+    {
+      "comment": "ILLEGAL: Inline IF assignments must be wrapped",
+      "match": "(?<=:=)\\s*\\bIF\\b",
+      "name": "invalid.illegal.missing-brackets.extended"
+    },
+    {
+      "comment": "ILLEGAL: Universal NOT",
+      "match": "\\bNOT\\b\\s*(?!IN|CONTAINS)",
+      "name": "invalid.illegal.extended"
+    },
+    {
+      "comment": "Output Wrapper",
+      "match": "\\boutput(?=\\()",
+      "name": "entity.name.function.debugger.extended"
+    },
+    {
+      "comment": "Variable Interpolation",
+      "match": "\\$\\{[a-zA-Z0-9_\\.]+\\}",
+      "name": "variable.other.interpolation.extended"
     },
     {
       "comment": "Control Flow Keywords",
@@ -136,22 +83,17 @@
       "name": "keyword.operator.logical.extended"
     },
     {
-      "comment": "Assignment Operator",
-      "match": ":=",
-      "name": "keyword.operator.assignment.extended"
-    },
-    {
       "comment": "Comparison Operators",
       "match": "(?<!:)=|!=|<>|>=|<=|>|<|\\+|\\-|\\*|/|%",
       "name": "keyword.operator.comparison.extended"
     },
     {
-      "comment": "Context Keywords (including 'after' for transactional callbacks)",
-      "match": "\\b(this|self|after)\\.(object|organisation|user|start|end|bop|eop|inputView|inputViews)\\b|\\b(after)\\b",
+      "comment": "Context Keywords",
+      "match": "\\b(this|self|after)\\.(object|organisation|user|start|end|bop|eop|inputView|inputViews)\\b|\\b(after|self)\\b",
       "name": "variable.language.context.extended"
     },
     {
-      "comment": "Input View Keys (key_ prefix)",
+      "comment": "Input View Keys",
       "match": "\\bkey_[a-zA-Z0-9_]+\\b",
       "name": "variable.other.custom.inputkey.extended"
     },
@@ -161,39 +103,9 @@
       "name": "constant.language.extended"
     },
     {
-      "comment": "Custom Variables (_prefix)",
-      "match": "\\b_[a-zA-Z0-9_]+\\b",
-      "name": "variable.other.custom.underscore.extended"
-    },
-    {
-      "comment": "Custom Variables (vPrefix)",
-      "match": "\\bv[A-Z][a-zA-Z0-9_]*\\b",
-      "name": "variable.other.custom.vprefix.extended"
-    },
-    {
-      "comment": "Table & Style Constants (including Status Choices)",
-      "match": "\\b(LEFT|RIGHT|CENTER|VISIBLE|NOVISIBLE|ADMINVISIBLEONLY|VISIBLEASPARENTONLY|wrapped|full|truncated|separator|percentage|thousands|date|duration|RED|AMBER|GREEN|BLUE|GREY)\\b",
-      "name": "constant.other.style.extended"
-    },
-    {
-      "comment": "System Properties",
-      "match": "\\.(id|name|description|className|linkedTo|parent|createdTime|createdBy|lastModifiedDate|lastModifiedBy|visible|inheritVisible|inScope|inheritScope|available|inheritAvailable|expression|statusClassification|responsible|email|inputset|rid|long|formatted|weight|unit|period|indexOrder)(?=\\b)",
-      "name": "variable.other.property.system.extended"
-    },
-    {
-      "comment": "Configuration Properties",
-      "match": "\\b(decimalPlaces|formatPostfix|allowBlank|listPropertySet|multiselect|advanced|listDisplayType|overrideTableName|referenceModel|types|property|filter|propertyReadonly|viewTypes|sortVisibility|columnsLargeScreen|columnsMediumScreen|columnsSmallScreen|borderStyle|createMode|objectType|parentDestinationExpression|editPage|propertyMapping|required|propertyHint|inputSet|buttonType|destinationExpression|afterExpression)(?=\\s*:=)",
-      "name": "variable.parameter.configuration.extended"
-    },
-    {
       "comment": "Global Functions",
       "match": "\\b(LIST|MAP|AGG|abs|cbrt|ceil|floor|pow|round|sqrt|md|num|str|priority|createtable|date)\\b",
       "name": "support.function.global.extended"
-    },
-    {
-      "comment": "Transactional Methods (Write)",
-      "match": "\\.(add|affixLink|change|clear|copy|delete|error|generate|link|move|moveAfter|moveBefore|notify|reset|sendmail|start|unlink|update)(?=\\()",
-      "name": "storage.type.method.transactional.extended"
     },
     {
       "comment": "Object & List Methods (Read)",
@@ -206,19 +118,54 @@
       "name": "support.function.table.extended"
     },
     {
+      "comment": "Custom Variables (_prefix)",
+      "match": "\\b_[a-zA-Z0-9_]+\\b",
+      "name": "variable.other.custom.underscore.extended"
+    },
+    {
+      "comment": "Custom Variables (vPrefix)",
+      "match": "\\bv[A-Z][a-zA-Z0-9_]*\\b",
+      "name": "variable.other.custom.vprefix.extended"
+    },
+    {
+      "comment": "Style Constants",
+      "match": "\\b(LEFT|RIGHT|CENTER|VISIBLE|NOVISIBLE|ADMINVISIBLEONLY|VISIBLEASPARENTONLY|wrapped|full|truncated|separator|percentage|thousands|date|duration|RED|AMBER|GREEN|BLUE|GREY)\\b",
+      "name": "constant.other.style.extended"
+    },
+    {
+      "comment": "System Properties",
+      "match": "\\.(id|name|description|className|linkedTo|parent|organisation|createdTime|createdBy|lastModifiedDate|lastModifiedBy|visible|inheritVisible|inScope|inheritScope|available|inheritAvailable|statusClassification|responsible|email|inputset|rid|long|formatted|weight|unit|period|indexOrder)(?=\\b)",
+      "name": "variable.other.property.system.extended"
+    },
+    {
+      "comment": "Configuration Properties",
+      "match": "\\b(decimalPlaces|formatPostfix|allowBlank|listPropertySet|multiselect|advanced|listDisplayType|overrideTableName|referenceModel|types|property|filter|propertyReadonly|viewTypes|sortVisibility|columnsLargeScreen|columnsMediumScreen|columnsSmallScreen|borderStyle|createMode|objectType|parentDestinationExpression|editPage|propertyMapping|required|propertyHint|inputSet|buttonType|destinationExpression|afterExpression)(?=\\s*:=)",
+      "name": "variable.parameter.configuration.extended"
+    },
+    {
       "comment": "Explicit Model Roots",
       "match": "\\broot\\.(accessPolicy|accessProfile|actionPlan|ceAsset|ceAttachment|ceIndicator|ceRiskAssessment|classConfig|custom_Period|defaults|expression|externalResource|forms|group|node|nodeDataImport|nodeType|notification|organisation|page|portal|processManagement|property|reporter|risk|role|templateCategory|transformer|user)\\b",
       "name": "entity.name.class.root.extended"
     },
     {
-      "comment": "ID Space Prefixes",
-      "match": "\\b(ap|c|d|g|k|n|ndi|nt|o|p|r|rt|t|u|ceven|cetas|cecom|ceinc|cepro|cepol|cecme|ceiss|ceass|ceser|cecot|ceprj|cereg|cecor|ceind|ceatt|ceras|acpol|role|ceprd|sa|cepsc|ceprv|cewfl|cedis|ceinq|ceqst|cedpi|cetia|ceasa|fas)\\.(?=[a-zA-Z0-9_]+)",
+      "comment": "Known Object Types (Bold Green)",
+      "match": "\\b(ActionPlan|Attachment|BarChart|BarLineChart|BPMNModelTable|Category|CeAsset|CeAttachment|CeComplianceRequirement|CeContract|CeControlMeasure|CeDistribution|CeDPIA|CeIncident|CeIndicator|CeInquiry|CeIssue|CePolicy|CePreScreening|CePrivacy|CeProcedure|CeProduct|CeProject|CeQuestionnaire|CeRegulation|CeRiskAssessment|CeService|CeTask|CeTia|CeVendor|CeWorkflow|Chart|Container|CreateObjectView|DescriptionView|EditField|EditPage|EnterpriseTemplate|ExtendedTable|FileResource|FilterTable|Folder|Form|Group|HistoricalBooleanMethodConfig|HistoricalDateMethodConfig|HistoricalListMethodConfig|HistoricalNumberMethodConfig|HistoricalReferenceMethodConfig|HistoricalRichTextMethodConfig|HistoricalTextMethodConfig|ImageView|Incident|IncidentList|InputSet|InputView|Kpi|LinkMap|ListMethodConfig|ListPropertySet|ListPropertySetItem|Node|Organisation|PieChart|ProcessIncidentTable|ProcessInstanceTable|ProcessTable|ReferenceMethodConfig|Report|Reporter|ReverseReferenceMethodConfig|Risk|RiskChart|Role|Scenario|ScenarioTable|Scorecard|Section|SelectionTable|ServiceAccount|Spacer|Survey|SystemMethodConfig|Tab|Tabset|TaskList|TemplateCategory|TextElement|TextMethodConfig|Transformer|User|UserTaskInstanceTable|WebChildReference)\\b",
+      "name": "entity.name.class.extended"
+    },
+    {
+      "comment": "ID Space Prefixes (ALL)",
+      "match": "\\b(acpol|ap|ceasa|ceass|ceatt|cecom|cecor|cecot|cedis|cedpi|ceinq|ceinc|ceind|ceiss|cecme|cepol|ceprd|ceprj|cepro|ceprv|cepsc|ceqst|ceras|cereg|ceser|cetas|cetia|ceven|cewfl|c|d|ds|fas|g|k|ndi|nt|n|o|p|role|rt|r|sa|t|u)\\.(?=[a-zA-Z0-9_]+)",
       "name": "entity.name.type.namespace.extended"
     },
     {
       "comment": "Numbers",
       "match": "\\b\\d+(\\.\\d+)?\\b",
       "name": "constant.numeric.extended"
+    },
+    {
+      "comment": "All Brackets (Red) - LAST PRIORITY so runner brackets aren't overridden",
+      "match": "[\\(\\)\\[\\]\\{\\}]",
+      "name": "punctuation.section.brackets.extended"
     }
   ]
 }

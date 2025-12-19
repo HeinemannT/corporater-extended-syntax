@@ -9,39 +9,84 @@
   },
   "tokenColors": [
     {
-      "name": "Comment",
-      "scope": ["comment"],
-      "settings": { "foreground": "#6A9955" }
-    },
-    {
-      "name": "Strings",
-      "scope": ["string"],
-      "settings": { "foreground": "#CE9178" }
-    },
-    {
-      "name": "Numbers",
-      "scope": ["constant.numeric"],
-      "settings": { "foreground": "#B5CEA8" }
-    },
-    {
-      "name": "Control Keywords",
+      "name": "Control Keywords (IF ELSE)",
       "scope": ["keyword.control"],
-      "settings": { "foreground": "#C586C0", "fontStyle": "bold" }
+      "settings": { "foreground": "#4FC1FF", "fontStyle": "bold" }
     },
     {
-      "name": "Transactional Methods (WRITE/DANGER)",
-      "scope": ["storage.type.method.transactional.extended"],
-      "settings": { "foreground": "#FF5252", "fontStyle": "bold" }
+      "name": "Context Keywords (this, self, after)",
+      "scope": ["variable.language.context.extended"],
+      "settings": { "foreground": "#569CD6", "fontStyle": "italic" }
     },
     {
-      "name": "Standard Methods (READ/SAFE)",
-      "scope": ["support.function.method.extended", "support.function.global.extended"],
+      "name": "Brackets & Punctuation (Default Red)",
+      "scope": ["punctuation.section.brackets.extended"],
+      "settings": { "foreground": "#ff0039", "fontStyle": "bold" }
+    },
+    {
+      "name": "Action Runner Brackets ({}) - Green",
+      "scope": ["punctuation.section.brackets.runner.extended"],
+      "settings": { "foreground": "#4CAF50", "fontStyle": "bold" }
+    },
+    {
+      "name": "Object Types (Kpi, Incident...)",
+      "scope": ["entity.name.class.extended"],
+      "settings": { "foreground": "#008080", "fontStyle": "bold" }
+    },
+    {
+      "name": "ID Namespaces (t., o., ceven.)",
+      "scope": ["entity.name.type.namespace.extended"],
       "settings": { "foreground": "#569CD6" }
     },
     {
-      "name": "Table Methods (Configuration)",
-      "scope": ["support.function.table.extended"],
-      "settings": { "foreground": "#4EC9B0" }
+      "name": "Double Quotes (Soft Orange)",
+      "scope": ["string.quoted.double"],
+      "settings": { "foreground": "#CE9178" }
+    },
+    {
+      "name": "Single Quotes (Amber)",
+      "scope": ["string.quoted.single"],
+      "settings": { "foreground": "#FFCA28" }
+    },
+    {
+      "name": "Variable Interpolation ${...}",
+      "scope": ["variable.other.interpolation.extended"],
+      "settings": { "foreground": "#4FC1FF", "fontStyle": "bold" }
+    },
+    {
+      "name": "Numbers (Soft Purple)",
+      "scope": ["constant.numeric"],
+      "settings": { "foreground": "#D197D9" }
+    },
+    {
+      "name": "Action Runners (Green = GO)",
+      "scope": ["entity.name.function.runner.extended"],
+      "settings": { "foreground": "#4CAF50", "fontStyle": "bold" }
+    },
+    {
+      "name": "Commands/Methods (Functional)",
+      "scope": [
+        "support.function.method.extended", 
+        "support.function.global.extended", 
+        "support.function.table.extended",
+        "entity.name.function.call.extended"
+      ],
+      "settings": { "foreground": "#FFCA28", "fontStyle": "italic" }
+    },
+    {
+      "name": "Transactional Methods (DANGER)",
+      "scope": ["storage.type.method.transactional.extended"],
+      "settings": { "foreground": "#ff0039", "fontStyle": "bold" }
+    },
+    {
+      "name": "Comment (Sage Green)",
+      "scope": ["comment"],
+      "settings": { "foreground": "#608b4e" }
+    },
+    {
+      "name": "Documentation Tags",
+      "scope": ["keyword.other.documentation.extended"],
+      "settings": { "foreground": "#608b4e", "fontStyle": "bold" }
     },
     {
       "name": "Model Roots",
@@ -49,14 +94,14 @@
       "settings": { "foreground": "#4EC9B0", "fontStyle": "italic" }
     },
     {
-      "name": "System Properties",
-      "scope": ["variable.other.property.system.extended"],
-      "settings": { "foreground": "#9CDCFE" }
-    },
-    {
       "name": "Custom Architect Variables (_prefix)",
       "scope": ["variable.other.custom.underscore.extended"],
       "settings": { "foreground": "#DCDCAA" }
+    },
+    {
+      "name": "Configuration Keys (Architect)",
+      "scope": ["variable.parameter.configuration.extended"],
+      "settings": { "foreground": "#D7BA7D" }
     },
     {
       "name": "Custom Extended Variables (vPrefix)",
@@ -64,9 +109,9 @@
       "settings": { "foreground": "#9CDCFE" }
     },
     {
-      "name": "Input Keys (key_prefix)",
-      "scope": ["variable.other.custom.inputkey.extended"],
-      "settings": { "foreground": "#4FC1FF" }
+      "name": "System Properties",
+      "scope": ["variable.other.property.system.extended"],
+      "settings": { "foreground": "#9CDCFE", "fontStyle": "bold" }
     },
     {
       "name": "Illegal / Error",
@@ -74,23 +119,9 @@
       "settings": { "foreground": "#F44336", "fontStyle": "underline" }
     },
     {
-      "name": "Deprecated",
-      "scope": ["invalid.deprecated"],
-      "settings": { "foreground": "#FF9800", "fontStyle": "italic" }
-    },
-    {
-      "name": "Constants & Enums",
+      "name": "Constants (MISSING, TRUE)",
       "scope": ["constant.language", "constant.other.style"],
-      "settings": { "foreground": "#D16969" }
-    },
-    {
-      "name": "Embedded Language Background (JSON/HTML/CSS)",
-      "scope": [
-        "string.quoted.extended.embedded.html", 
-        "string.quoted.extended.embedded.css",
-        "string.quoted.extended.embedded.json"
-      ],
-      "settings": { "foreground": "#D4D4D4" }
+      "settings": { "foreground": "#AE81FF", "fontStyle": "bold" }
     }
   ]
 }

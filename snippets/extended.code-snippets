@@ -1,79 +1,133 @@
 {
-  "Binary Decomposition Loop": {
-    "prefix": "loop-binary",
-    "body": [
-      "// Helper list for iteration, created using binary decomposition.",
-      "vIterationController := list(list(),list()) ",
-      "vIterationController := vIterationController.union(vIterationController) ",
-      "vIterationController := vIterationController.union(vIterationController) ",
-      "vIterationController := vIterationController.union(vIterationController) ",
-      "vIterationController := vIterationController.union(vIterationController)",
-      "",
-      "// Step 1: Create a list that has the same length as the target",
-      "vTargetSize := ${1:vInputList}.size()",
-      "vEntryList := list(list()) ",
-      "vCompList := list() ",
-      "",
-      "IF vTargetSize = 0 THEN ",
-      "    vCompList := list() ",
-      "ELSE ",
-      "    vIterationController.forEach(iteration:",
-      "        IF vTargetSize > 0 THEN",
-      "            IF vTargetSize % 2 = 1 THEN",
-      "                vCompList := vCompList.union(vEntryList)",
-      "            ELSE '' ENDIF",
-      "            vTargetSize := floor(vTargetSize / 2)",
-      "            vEntryList := vEntryList.union(vEntryList)",
-      "        ELSE '' ENDIF ",
-      "    )",
-      "ENDIF",
-      "",
-      "// Step 2: Iterate",
-      "vCompList.forEach(iteration:",
-      "    $0",
-      ")"
-    ],
-    "description": "Creates a loop iterator for situations where direct forEach is impossible."
-  },
-  "Safe Query": {
-    "prefix": "select-safe",
-    "body": [
-      "SELECT ${1:ObjectType} FROM ${2:root.organisation} WHERE ${3:property} = ${4:value}"
-    ],
-    "description": "Standard SELECT query format"
-  },
-  "Transaction Block": {
-    "prefix": "transaction",
+  "IF Block": {
+    "prefix": "IF-block",
     "body": [
       "IF ${1:condition} THEN",
-      "    ${2:this.object}.change(",
-      "        ${3:property} := ${4:value}",
-      "    )",
+      "    ${2:action}",
       "ELSE",
       "    \"\"",
       "ENDIF"
     ],
-    "description": "Safe transactional block with ELSE catch"
+    "description": "Safe transactional block with ELSE catch."
+  },
+  "Standard Query": {
+    "prefix": "select-std",
+    "body": [
+      "SELECT ${1:ObjectType} FROM ${2:root.organisation} WHERE ${3:property} = ${4:value}"
+    ],
+    "description": "Standard SELECT query format."
+  },
+  "Simple Loop": {
+    "prefix": "loop-simple",
+    "body": [
+      "${1:list}.forEach(${2:item}:",
+      "    ${3:// Code}",
+      ")"
+    ],
+    "description": "Standard forEach loop for iterating over a list."
+  },
+  "JSON String Builder": {
+    "prefix": "json-string",
+    "body": [
+      "vJson := '{'",
+      "       + '\"key\": \"value\",'",
+      "       + '\"number\": 123'",
+      "       + '}'",
+      "$0"
+    ],
+    "description": "Creates a multi-line JSON string using concatenation (safe for highlighting)."
+  },
+    "JSON List Builder": {
+    "prefix": "json-list",
+    "body": [
+      "vJsonList := '['",
+      "           + '  {'",
+      "           + '    \"id\": \"${1:obj1_id}\",'",
+      "           + '    \"name\": \"${2:Object 1}\"'",
+      "           + '  },'",
+      "           + '  {'",
+      "           + '    \"id\": \"${3:obj2_id}\",'",
+      "           + '    \"name\": \"${4:Object 2}\"'",
+      "           + '  }'",
+      "           + ']'",
+      "$0"
+    ],
+    "description": "Creates a multi-line JSON list with two objects using concatenation."
+  },
+  "Table with Columns": {
+    "prefix": "table-columns",
+    "body": [
+      "vTable := ${1:list}.table()",
+      "vTable.addColumn(\"${2:Header}\", ${3:property})",
+      "      .width(${4:100})",
+      "      .align(${5:LEFT})",
+      "$0",
+      "vTable"
+    ],
+    "description": "Creates a table and adds a formatted column."
+  },
+  "Table Add Column": {
+    "prefix": "table-addcolumn",
+    "body": [
+      ".addColumn(\"${1:Header}\", ${2:expression})",
+      "    .width(${3:100})",
+      "    .align(${4:LEFT})"
+    ],
+    "description": "Adds a column to an existing table chain."
+  },
+  "Table Add Row": {
+    "prefix": "table-addrow",
+    "body": [
+      "${1:vTable}.addRow(${2:contextObject}, ",
+      "    ${3:val1}, ",
+      "    ${4:val2}",
+      ")"
+    ],
+    "description": "Adds a manual row to a table."
+  },
+  "Create Object": {
+    "prefix": "create-object",
+    "body": [
+      "${1:parentObject}.add(${2:ObjectType}, ",
+      "    name := \"${3:New Name}\",",
+      "    description := \"${4:Description}\"",
+      ")"
+    ],
+    "description": "Adds a new object to a parent."
+  },
+  "Create List": {
+    "prefix": "create-list",
+    "body": [
+      "vList := LIST(${1:item1}, ${2:item2})",
+      "$0"
+    ],
+    "description": "Creates a new list variable."
   },
   "Documentation Header": {
     "prefix": "docblock",
     "body": [
       "/* Name: ${1:Script Name}",
-      "* Tags: ${2:Tag1, Tag2}",
-      "* Explanation: ${3:Description of logic}",
+      "* Description: ${2:Short description of what this script does}",
       "*/",
       "$0"
     ],
-    "description": "Standard script header"
+    "description": "Standard script header with description."
   },
-  "Markdown/HTML Variable": {
-    "prefix": "html-var",
+  "Divider": {
+    "prefix": "divider",
     "body": [
-      "v${1:Content}Html := '<div style=\"' + v${2:Style}Style + '\">",
-      "    ' + ${3:this.object.name} + '",
-      "</div>'",
-      "str(v${1:Content}Html)"
+      "// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
     ],
-    "description": "Standard HTML variable block with style injection"
+    "description": "Visual separator line."
+  },
+  "Send Email": {
+    "prefix": "send-email",
+    "body": [
+      "sendmail(\"${1:Subject}\", ",
+      "    \"${2:Body (HTML supported)}\", ",
+      "    ${3:this.user}",
+      ")"
+    ],
+    "description": "Sends an email to a recipient."
   }
 }
