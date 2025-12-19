@@ -1,0 +1,75 @@
+{
+  "name": "corporater-extended",
+  "displayName": "Corporater Extended Code",
+  "description": "Syntax highlighting, linting, snippets, and documentation for Corporater Extended Code.",
+  "version": "1.3.1",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Themes"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:extended"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "extended",
+        "aliases": [
+          "Extended",
+          "extended"
+        ],
+        "extensions": [
+          ".ext",
+          ".extended",
+          ".txt"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "extended",
+        "scopeName": "source.extended",
+        "path": "./syntaxes/extended.tmLanguage.json",
+        "embeddedLanguages": {
+          "text.html.basic": "html",
+          "source.css": "css",
+          "source.json": "json"
+        }
+      }
+    ],
+    "snippets": [
+      {
+        "language": "extended",
+        "path": "./snippets/extended.code-snippets"
+      }
+    ],
+    "themes": [
+      {
+        "label": "Corporater Dark",
+        "uiTheme": "vs-dark",
+        "path": "./themes/corporater-dark-color-theme.json"
+      },
+      {
+        "label": "Corporater Light",
+        "uiTheme": "vs",
+        "path": "./themes/corporater-light-color-theme.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.70.0",
+    "@types/node": "^16.x",
+    "typescript": "^4.7.4"
+  }
+}

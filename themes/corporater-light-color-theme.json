@@ -1,0 +1,96 @@
+{
+  "name": "Corporater Light",
+  "type": "light",
+  "colors": {
+    "editor.background": "#FFFFFF",
+    "editor.foreground": "#000000",
+    "activityBar.background": "#2C2C2C",
+    "sideBar.background": "#F3F3F3"
+  },
+  "tokenColors": [
+    {
+      "name": "Comment",
+      "scope": ["comment"],
+      "settings": { "foreground": "#008000" }
+    },
+    {
+      "name": "Strings",
+      "scope": ["string"],
+      "settings": { "foreground": "#A31515" }
+    },
+    {
+      "name": "Numbers",
+      "scope": ["constant.numeric"],
+      "settings": { "foreground": "#098658" }
+    },
+    {
+      "name": "Control Keywords",
+      "scope": ["keyword.control"],
+      "settings": { "foreground": "#AF00DB", "fontStyle": "bold" }
+    },
+    {
+      "name": "Transactional Methods (WRITE/DANGER)",
+      "scope": ["storage.type.method.transactional.extended"],
+      "settings": { "foreground": "#D00000", "fontStyle": "bold" }
+    },
+    {
+      "name": "Standard Methods (READ/SAFE)",
+      "scope": ["support.function.method.extended", "support.function.global.extended"],
+      "settings": { "foreground": "#005CC5" }
+    },
+    {
+      "name": "Table Methods (Configuration)",
+      "scope": ["support.function.table.extended"],
+      "settings": { "foreground": "#008080" }
+    },
+    {
+      "name": "Model Roots",
+      "scope": ["entity.name.class.root.extended"],
+      "settings": { "foreground": "#008080", "fontStyle": "italic" }
+    },
+    {
+      "name": "System Properties",
+      "scope": ["variable.other.property.system.extended"],
+      "settings": { "foreground": "#005CC5" }
+    },
+    {
+      "name": "Custom Architect Variables (_prefix)",
+      "scope": ["variable.other.custom.underscore.extended"],
+      "settings": { "foreground": "#795E26" }
+    },
+    {
+      "name": "Custom Extended Variables (vPrefix)",
+      "scope": ["variable.other.custom.vprefix.extended"],
+      "settings": { "foreground": "#005CC5" }
+    },
+    {
+      "name": "Input Keys (key_prefix)",
+      "scope": ["variable.other.custom.inputkey.extended"],
+      "settings": { "foreground": "#0451A5" }
+    },
+    {
+      "name": "Illegal / Error",
+      "scope": ["invalid.illegal"],
+      "settings": { "foreground": "#E51400", "fontStyle": "underline" }
+    },
+    {
+      "name": "Deprecated",
+      "scope": ["invalid.deprecated"],
+      "settings": { "foreground": "#754C00", "fontStyle": "italic" }
+    },
+    {
+      "name": "Constants & Enums",
+      "scope": ["constant.language", "constant.other.style"],
+      "settings": { "foreground": "#800000" }
+    },
+    {
+      "name": "Embedded Language Background (JSON/HTML/CSS)",
+      "scope": [
+        "string.quoted.extended.embedded.html", 
+        "string.quoted.extended.embedded.css",
+        "string.quoted.extended.embedded.json"
+      ],
+      "settings": { "foreground": "#444444" }
+    }
+  ]
+}

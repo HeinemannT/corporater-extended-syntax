@@ -1,0 +1,79 @@
+{
+  "Binary Decomposition Loop": {
+    "prefix": "loop-binary",
+    "body": [
+      "// Helper list for iteration, created using binary decomposition.",
+      "vIterationController := list(list(),list()) ",
+      "vIterationController := vIterationController.union(vIterationController) ",
+      "vIterationController := vIterationController.union(vIterationController) ",
+      "vIterationController := vIterationController.union(vIterationController) ",
+      "vIterationController := vIterationController.union(vIterationController)",
+      "",
+      "// Step 1: Create a list that has the same length as the target",
+      "vTargetSize := ${1:vInputList}.size()",
+      "vEntryList := list(list()) ",
+      "vCompList := list() ",
+      "",
+      "IF vTargetSize = 0 THEN ",
+      "    vCompList := list() ",
+      "ELSE ",
+      "    vIterationController.forEach(iteration:",
+      "        IF vTargetSize > 0 THEN",
+      "            IF vTargetSize % 2 = 1 THEN",
+      "                vCompList := vCompList.union(vEntryList)",
+      "            ELSE '' ENDIF",
+      "            vTargetSize := floor(vTargetSize / 2)",
+      "            vEntryList := vEntryList.union(vEntryList)",
+      "        ELSE '' ENDIF ",
+      "    )",
+      "ENDIF",
+      "",
+      "// Step 2: Iterate",
+      "vCompList.forEach(iteration:",
+      "    $0",
+      ")"
+    ],
+    "description": "Creates a loop iterator for situations where direct forEach is impossible."
+  },
+  "Safe Query": {
+    "prefix": "select-safe",
+    "body": [
+      "SELECT ${1:ObjectType} FROM ${2:root.organisation} WHERE ${3:property} = ${4:value}"
+    ],
+    "description": "Standard SELECT query format"
+  },
+  "Transaction Block": {
+    "prefix": "transaction",
+    "body": [
+      "IF ${1:condition} THEN",
+      "    ${2:this.object}.change(",
+      "        ${3:property} := ${4:value}",
+      "    )",
+      "ELSE",
+      "    \"\"",
+      "ENDIF"
+    ],
+    "description": "Safe transactional block with ELSE catch"
+  },
+  "Documentation Header": {
+    "prefix": "docblock",
+    "body": [
+      "/* Name: ${1:Script Name}",
+      "* Tags: ${2:Tag1, Tag2}",
+      "* Explanation: ${3:Description of logic}",
+      "*/",
+      "$0"
+    ],
+    "description": "Standard script header"
+  },
+  "Markdown/HTML Variable": {
+    "prefix": "html-var",
+    "body": [
+      "v${1:Content}Html := '<div style=\"' + v${2:Style}Style + '\">",
+      "    ' + ${3:this.object.name} + '",
+      "</div>'",
+      "str(v${1:Content}Html)"
+    ],
+    "description": "Standard HTML variable block with style injection"
+  }
+}
