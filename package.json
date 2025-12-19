@@ -2,9 +2,13 @@
   "name": "corporater-extended",
   "displayName": "Corporater Extended Code",
   "description": "Syntax highlighting, linting, snippets, and themes for Corporater Extended Code.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "engines": {
     "vscode": "^1.70.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HeinemannT/corporater-extended-syntax.git"
   },
   "categories": [
     "Programming Languages",
