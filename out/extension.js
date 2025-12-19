@@ -5,174 +5,267 @@ const vscode = require("vscode");
 const architectNotes = {
     // --- TRANSACTIONAL ---
     'add': `**add(objectType, [prop := val, ...])**
-    Adds a new object instance under the context object.
-    * **⚠️ Limitation:** Cannot use templates from Defaults/TemplateCategory directly. Use base type + \`.link()\` instead.
-    * **Example:** \`o.137.add(Scorecard)\` or \`t.6938.add(Kpi, name := "Revenue")\``,
+
+Adds a new object instance under the context object.
+
+* **Limitation:** Cannot use templates from Defaults/TemplateCategory directly. Use base type + \`.link()\` instead.
+* **Example:** \`o.137.add(Scorecard)\` or \`t.6938.add(Kpi, name := "Revenue")\``,
     'affixLink': `**affixLink(templateObject)**
-    Links a model object to a template, enabling template inheritance.
-    * **Example:** \`t.8345.affixLink(t.432)\``,
+
+Links a model object to a template, enabling template inheritance.
+
+* **Example:** \`t.8345.affixLink(t.432)\``,
     'change': `**change(prop := val, ...)**
-    Modifies properties of an object or list.
-    * **⚠️ Performance:** Bulk changes trigger individual update events. Use sparingly on large lists.
-    * **⚠️ Pitfall:** Changing an \`id\` breaks external string references not using the internal GUID.
-    * **Example:** \`t.KP001.change(name := "Revenue")\``,
+
+Modifies properties of an object or list.
+
+* **Performance:** Bulk changes trigger individual update events. Use sparingly on large lists.
+* **Pitfall:** Changing an \`id\` breaks external string references not using the internal GUID.
+* **Example:** \`t.KP001.change(name := "Revenue")\``,
     'clear': `**clear([prop1], ...)**
-    Clears properties (object context) or InputView variables (session/view context).
-    * **Object:** \`myKpi.clear(description)\`
-    * **Session:** \`clear(testStr)\``,
+
+Clears properties (object context) or InputView variables (session/view context).
+
+* **Object:** \`myKpi.clear(description)\`
+* **Session:** \`clear(testStr)\``,
     'copy': `**copy(object, [prop := val, ...])**
-    Duplicates an object to the current location.
-    * **Example:** \`t.870.copy(t.499, id := "MYNEWID")\``,
+
+Duplicates an object to the current location.
+
+* **Example:** \`t.870.copy(t.499, id := "MYNEWID")\``,
     'delete': `**delete()**
-    Permanently removes the object. **No Undo.**
-    * **Architect Advice:** Prefer setting \`status := "Archived"\` or \`inScope := FALSE\` for audit trails.
-    * **Example:** \`t.9683.delete()\``,
+
+Permanently removes the object. **No Undo.**
+
+* **Architect Advice:** Prefer setting \`status := "Archived"\` or \`inScope := FALSE\` for audit trails.
+* **Example:** \`t.9683.delete()\``,
     'error': `**error(message)**
-    Aborts script execution immediately with a message. Useful for validation gates.
-    * **Example:** \`IF x=0 THEN error("Zero value") ENDIF\``,
+
+Aborts script execution immediately with a message. Useful for validation gates.
+
+* **Example:** \`IF x=0 THEN error("Zero value") ENDIF\``,
     'generate': `**generate([includeId])**
-    Outputs the transactional code needed to recreate this object (useful for migration).
-    * **Params:** \`includeId\` (boolean) - if true, includes the specific ID assignments.`,
+
+Outputs the transactional code needed to recreate this object (useful for migration).
+
+* **Params:** \`includeId\` (boolean) - if true, includes the specific ID assignments.`,
     'link': `**link(templateObject)**
-    Creates a linked copy of a template as a child.
-    * **Best Practice:** Use for structural objects (Scorecards) to ensure standard updates flow down.
-    * **Example:** \`t.2389.link(t.500)\``,
+
+Creates a linked copy of a template as a child.
+
+* **Best Practice:** Use for structural objects (Scorecards) to ensure standard updates flow down.
+* **Example:** \`t.2389.link(t.500)\``,
     'move': `**move(destinationObject)**
-    Re-parents an object.
-    * **⚠️ Limitation:** Cannot move objects between different Models/Roots.`,
+
+Re-parents an object.
+
+* **Limitation:** Cannot move objects between different Models/Roots.`,
     'moveAfter': `**moveAfter(destinationObject)**
-    Reorders this object to sit immediately *after* the target.`,
+
+Reorders this object to sit immediately *after* the target.`,
     'moveBefore': `**moveBefore(destinationObject)**
-    Reorders this object to sit immediately *before* the target.`,
+
+Reorders this object to sit immediately *before* the target.`,
     'notify': `**notify(subject, [body], [recipients], [category])**
-    Sends a system notification. Defaults to System Admin if no recipient specified.`,
+
+Sends a system notification. Defaults to System Admin if no recipient specified.`,
     'reset': `**reset([prop1], ...)**
-    Reverts overridden properties on a linked object back to their template values.
-    * **Example:** \`t.67203.reset(name)\``,
+
+Reverts overridden properties on a linked object back to their template values.
+
+* **Example:** \`t.67203.reset(name)\``,
     'sendmail': `**sendmail(subject, body, recipients)**
-    Sends an email. Body supports HTML (use \`md()\` to convert markdown).
-    * **Example:** \`sendmail("Update", "Check this", "user@example.com")\``,
+
+Sends an email. Body supports HTML (use \`md()\` to convert markdown).
+
+* **Example:** \`sendmail("Update", "Check this", "user@example.com")\``,
     'start': `**start()**
-    Executes a runnable object (Action Plan, Transformer, Event Rule).
-    * **Example:** \`t.81037.start()\``,
+
+Executes a runnable object (Action Plan, Transformer, Event Rule).
+
+* **Example:** \`t.81037.start()\``,
     'unlink': `**unlink()**
-    Breaks the link to the template, making this a standalone object. Stops future template updates.`,
+
+Breaks the link to the template, making this a standalone object. Stops future template updates.`,
     // --- LIST & OBJECT ---
     'ancestor': `**ancestor(type)**
-    Returns the first parent/grandparent matching the type.
-    * **Example:** \`t.123.ancestor(Scorecard)\``,
+
+Returns the first parent/grandparent matching the type.
+
+* **Example:** \`t.123.ancestor(Scorecard)\``,
     'as': `**as(property)**
-    Maps a list of objects to a list of their property values (e.g., \`kpis.as(name)\`).
-    * **Example:** \`myKpis.as(responsible)\``,
+
+Maps a list of objects to a list of their property values (e.g., \`kpis.as(name)\`).
+
+* **Example:** \`myKpis.as(responsible)\``,
     'avg': `**avg()**
-    Returns the average of numeric values in a list (ignores non-numbers).`,
+
+Returns the average of numeric values in a list (ignores non-numbers).`,
     'calculate': `**calculate([property])**
-    Evaluates a property or expression in a specific context (time/object).
-    * **Usage:** \`myKpis.calculate(responsible)\` or \`calculate(actual, BOY, EOP)\``,
+
+Evaluates a property or expression in a specific context (time/object).
+
+* **Usage:** \`myKpis.calculate(responsible)\` or \`calculate(actual, BOY, EOP)\``,
     'children': `**children([type], ...)**
-    Returns immediate child objects. Faster than \`.descendants()\`.
-    * **Example:** \`this.object.children(BarChart, LineChart)\``,
+
+Returns immediate child objects. Faster than \`.descendants()\`.
+
+* **Example:** \`this.object.children(BarChart, LineChart)\``,
     'contains': `**list CONTAINS item**
-    Returns TRUE if the list includes the item.
-    * **Syntax:** \`list CONTAINS item\``,
+
+Returns TRUE if the list includes the item.
+
+* **Syntax:** \`list CONTAINS item\``,
     'count': `**count()**
-    Returns the number of items in a map or list.`,
+
+Returns the number of items in a map or list.`,
     'descendants': `**descendants([type], ...)**
-    Recursive deep search for all children.
-    * **⚠️ Performance:** Heavy operation. Always filter by type (e.g. \`descendants(Kpi)\`).`,
+
+Recursive deep search for all children.
+
+* **Performance:** Heavy operation. Always filter by type (e.g. \`descendants(Kpi)\`).`,
     'distinct': `**distinct()**
-    Returns a list with duplicates removed.`,
+
+Returns a list with duplicates removed.`,
     'filter': `**filter(condition)**
-    Returns a new list of items matching the condition.
-    * **Performance:** Iterates in memory. For huge sets, narrow your scope with \`SELECT\` first.
-    * **Example:** \`myKpis.filter(name = "*Revenue*")\``,
+
+Returns a new list of items matching the condition.
+
+* **Performance:** Iterates in memory. For huge sets, narrow your scope with \`SELECT\` first.
+* **Example:** \`myKpis.filter(name = "*Revenue*")\``,
     'first': `**first([n])**
-    Returns the first item (or first n items) of a list.`,
+
+Returns the first item (or first n items) of a list.`,
     'foreach': `**forEach(iterator: ...)**
-    Iterates through a list.
-    * **Return:** The value of the *last* statement executed.`,
+
+Iterates through a list.
+
+* **Return:** The value of the *last* statement executed.
+* **Scope Warning:** Variables defined inside this loop persist *outside* of it. Be careful when reusing variable names in subsequent loops.`,
     'get': `**get(key)**
-    Retrieves a value from a Map or an object from an ID space (e.g. \`o.get("123")\`).`,
+
+Retrieves a value from a Map or an object from an ID space (e.g. \`o.get("123")\`).`,
     'groupBy': `**groupBy(property)**
-    Groups items for aggregation (e.g., \`list.groupBy(status).count()\`).`,
+
+Groups items for aggregation (e.g., \`list.groupBy(status).count()\`).`,
     'indexOf': `**indexOf(substring, [start])**
-    Returns the index of a substring, or MISSING if not found.`,
+
+Returns the index of a substring, or MISSING if not found.`,
     'isMissing': `**isMissing()**
-    Use \`variable = MISSING\` instead.`,
+
+* **Deprecated:** Use \`variable = MISSING\` instead.`,
     'item': `**item(n)**
-    Returns the element at index n (0-based).`,
+
+Returns the element at index n (0-based).`,
     'join': `**join(separator)**
-    Concatenates list items into a single string.`,
+
+Concatenates list items into a single string.`,
     'last': `**last([n])**
-    Returns the last item (or last n items) of a list.`,
+
+Returns the last item (or last n items) of a list.`,
     'map': `**map(keyExp, [valueExp])**
-    Converts a list into a Key-Value Map structure.`,
+
+Converts a list into a Key-Value Map structure.`,
     'max': `**max()**
-    Returns the largest number in a list.`,
+
+Returns the largest number in a list.`,
     'merge': `**merge(list2)**
-    Set Union: Combines lists and removes duplicates.`,
+
+Set Union: Combines lists and removes duplicates.`,
     'min': `**min()**
-    Returns the smallest number in a list.`,
+
+Returns the smallest number in a list.`,
     'remove': `**remove(item)**
-    Removes all instances of an item from the list.`,
+
+Removes all instances of an item from the list.`,
     'reverse': `**reverse()**
-    Reverses the list order.`,
+
+Reverses the list order.`,
     'rref': `**rref([property], [type], ...)**
-    Reverse Reference: Finds objects that link *to* this object via the specified property.
-    * **Example:** \`myKpi.rref(affects, ActionPlan)\``,
+
+Reverse Reference: Finds objects that link *to* this object via the specified property.
+
+* **Example:** \`myKpi.rref(affects, ActionPlan)\``,
     'size': `**size()**
-    Returns the length of a list or string.`,
+
+Returns the length of a list or string.`,
     'sort': `**sort([expression])**
-    Sorts the list in ascending order.`,
+
+Sorts the list in ascending order.`,
     'sortReverse': `**sortReverse([expression])**
-    Sorts the list in descending order.`,
+
+Sorts the list in descending order.`,
     'strip': `**strip()**
-    Trims leading/trailing whitespace from a string.`,
+
+Trims leading/trailing whitespace from a string.`,
     'substring': `**substring(start, [end])**
-    Extracts a portion of a string.`,
+
+Extracts a portion of a string.`,
     'sum': `**sum()**
-    Returns the sum of numeric values.`,
+
+Returns the sum of numeric values.`,
     'tree': `**tree([childExp], [collapseExp])**
-    Builds a hierarchical tree structure for Tree Tables. Default child expression is \`children\`.
-    * **Example:** \`root.organisation.tree(children)\``,
+
+Builds a hierarchical tree structure for Tree Tables. Default child expression is \`children\`.
+
+* **Example:** \`root.organisation.tree(children)\``,
     'union': `**union(list2)**
-    Concatenates lists *keeping* duplicates.`,
+
+Concatenates lists *keeping* duplicates.`,
     'url': `**url([icon], [text], [tooltip], [url])**
-    Generates a clickable link structure. Argument order determines icon vs text display.`,
+
+Generates a clickable link structure. Argument order determines icon vs text display.`,
     'whenMissing': `**whenMissing(default)**
-    Returns the default value if the expression is MISSING.
-    * **Architect Advice:** Use on all UI properties to prevent "MISSING" errors visible to users.
-    * **Example:** \`myProp.whenMissing("No Data")\``,
+
+Returns the default value if the expression is MISSING.
+
+* **Architect Advice:** Use on all UI properties to prevent "MISSING" errors visible to users.
+* **Example:** \`myProp.whenMissing("No Data")\``,
     // --- TABLE METHODS ---
     'addColumn': `**addColumn(header, expression)**
-    Adds a column to a table.`,
+
+Adds a column to a table.`,
     'addTimeColumns': `**addTimeColumns(val, type, start, end, name)**
-    Generates dynamic columns for a time range.`,
+
+Generates dynamic columns for a time range.`,
     'addRow': `**addRow(obj, [vals...])**
-    Adds a custom row.
-    * **⚠️ Limitation:** Cannot reuse the same context object in multiple rows.`,
+
+Adds a custom row.
+
+* **Limitation:** Cannot reuse the same context object in multiple rows.`,
     'align': `**align(LEFT | RIGHT | CENTER)**
-    Sets alignment for table/column/row.`,
+
+Sets alignment for table/column/row.`,
     'collapse': `**collapse()**
-    Sets a tree table row to be collapsed by default.`,
+
+Sets a tree table row to be collapsed by default.`,
     'decimals': `**decimals(n)**
-    Sets decimal precision.`,
+
+Sets decimal precision.`,
     'formattype': `**formattype(type)**
-    Sets format (PERCENTAGE, THOUSANDS, DATE, DURATION).`,
+
+Sets format (PERCENTAGE, THOUSANDS, DATE, DURATION).`,
     'hidden': `**hidden()**
-    Hides the column by default (user can unhide).`,
+
+Hides the column by default (user can unhide).`,
     'indent': `**indent(n)**
-    Indents the row hierarchy.`,
+
+Indents the row hierarchy.`,
     'postfix': `**postfix(text)**
-    Appends text (e.g. unit) to the value.`,
+
+Appends text (e.g. unit) to the value.`,
     'prefix': `**prefix(text)**
-    Prepends text to the value.`,
+
+Prepends text to the value.`,
     'readonly': `**readonly()**
-    Disables editing for this table/column/row.`,
+
+Disables editing for this table/column/row.`,
     'style': `**style(style1, ...)**
-    Applies styles (bold, italics, wrapped, full, truncated, separator).`,
+
+Applies styles (bold, italics, wrapped, full, truncated, separator).`,
     'table': `**table([prop1], ...)**
-    Generates a table from a list.`,
+
+Generates a table from a list.`,
     // --- GLOBAL ---
     'abs': `**abs(num)**: Absolute value.`,
     'AGG': `**AGG(expr, root)**: Hierarchy aggregation.`,
@@ -180,7 +273,8 @@ const architectNotes = {
     'ceil': `**ceil(num)**: Rounds up.`,
     'createtable': `**createtable([headers...])**: Creates an empty table.`,
     'date': `**date(string)**: Parses string to Date object.
-    * **Format:** "04-07-2018" or "17/05/2018".`,
+
+* **Format:** "04-07-2018" or "17/05/2018".`,
     'floor': `**floor(num)**: Rounds down.`,
     'LIST': `**LIST(items...)**: Creates a list.`,
     'MAP': `**MAP(key;val, ...)**: Creates a map.`,
@@ -193,8 +287,25 @@ const architectNotes = {
     'sqrt': `**sqrt(num)**: Square root.`,
     'str': `**str(value)**: Casts to string.`,
     'select': `**SELECT Type FROM Root WHERE ...**
-    Efficiently queries the database.
-    * **Performance:** Faster than \`.filter()\` on large sets. Always scope \`FROM\` (e.g. \`FROM root.organisation\`) if possible.`,
+
+Efficiently queries the database.
+
+* **Performance:** Faster than \`.filter()\` on large sets. Always scope \`FROM\` (e.g. \`FROM root.organisation\`) if possible.`,
+    'today': `**TODAY**
+
+Returns the current date.
+
+* **Type Hint:** This is a Date object. Use \`str(TODAY)\` if you need to compare it with strings like "2023-01-01".`,
+    'bop': `**BOP** (Beginning of Period)
+
+Returns the start date of the current context period.
+
+* **Type Hint:** Date object.`,
+    'eop': `**EOP** (End of Period)
+
+Returns the end date of the current context period.
+
+* **Type Hint:** Date object.`,
     // --- ID SPACES & OBJECT TYPES ---
     'o': `**o (ORGANISATION)**: Organisation objects.`,
     'n': `**n (NODE)**: Node objects.`,
@@ -276,16 +387,16 @@ const architectNotes = {
 // --- ERROR EXPLAINERS ---
 // Explanations for common "Illegal" patterns detected by the grammar.
 const errorExplainers = {
-    'NOT': `**⛔ ILLEGAL SYNTAX: Universal NOT**
-    
-    * **Why:** Extended Code does NOT support \`IF NOT condition\`. 
-    * **Fix:** You must compare explicitly to FALSE.
-    * **Correct:** \`IF myBool = FALSE THEN ...\` or \`IF myValue != 10 THEN ...\``,
-    'IF': `**⛔ POTENTIAL ERROR: Unwrapped Assignment**
-    
-    * **Why:** Variable assignment \`v := IF ...\` is invalid syntax. 
-    * **Fix:** Wrap the entire IF block in parentheses.
-    * **Correct:** \`v := (IF condition THEN val1 ELSE val2 ENDIF)\``
+    'NOT': `**ILLEGAL SYNTAX: Universal NOT**
+
+* **Why:** Extended Code does NOT support \`IF NOT condition\`. 
+* **Fix:** You must compare explicitly to FALSE.
+* **Correct:** \`IF myBool = FALSE THEN ...\` or \`IF myValue != 10 THEN ...\``,
+    'IF': `**POTENTIAL ERROR: Unwrapped Assignment**
+
+* **Why:** Variable assignment \`v := IF ...\` is invalid syntax. 
+* **Fix:** Wrap the entire IF block in parentheses.
+* **Correct:** \`v := (IF condition THEN val1 ELSE val2 ENDIF)\``
 };
 function activate(context) {
     const hoverProvider = vscode.languages.registerHoverProvider('extended', {
@@ -317,7 +428,7 @@ function activate(context) {
             // 3. Handle namespaced calls (e.g. root.organisation)
             const dotRange = document.getWordRangeAtPosition(position, /[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+/);
             if (dotRange) {
-                const fullToken = document.getText(dotRange); // Case sensitive for roots?
+                const fullToken = document.getText(dotRange);
                 // Try exact match first, then lower
                 if (architectNotes[fullToken]) {
                     return new vscode.Hover(new vscode.MarkdownString(architectNotes[fullToken]));

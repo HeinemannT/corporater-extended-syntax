@@ -1,8 +1,5 @@
 import * as vscode from 'vscode';
 
-// --- ARCHITECT KNOWLEDGE BASE ---
-// Concise, expert-level advice.
-
 const architectNotes: { [key: string]: string } = {
     // --- TRANSACTIONAL ---
     'add': `**add(objectType, [prop := val, ...])**
